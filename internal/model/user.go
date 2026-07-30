@@ -1,0 +1,30 @@
+package model
+
+import "time"
+
+// User represents a registered user in the system.
+type User struct {
+	ID        string    `json:"id" db:"id"`
+	Email     string    `json:"email" db:"email"`
+	Password  string    `json:"-" db:"password"` // Never serialized to JSON
+	Tier      string    `json:"tier" db:"tier"`  // "free" | "premium"
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+}
+
+// Tier constants for user classification.
+const (
+	TierFree    = "free"
+	TierPremium = "premium"
+)
+
+// ValidTiers contains all valid tier values.
+var ValidTiers = map[string]bool{
+	TierFree:    true,
+	TierPremium: true,
+}
+
+// IsValidTier checks if the given tier string is valid.
+func IsValidTier(tier string) bool {
+	return ValidTiers[tier]
+}
