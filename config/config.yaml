@@ -1,0 +1,36 @@
+server:
+  port: 8080
+  mode: debug  # debug | release | test
+
+database:
+  host: localhost
+  port: 3306
+  user: root
+  password: ""
+  name: ratelimiterx
+
+redis:
+  addr: localhost:6379
+  password: ""
+  db: 0
+
+jwt:
+  access_secret: ""
+  refresh_secret: ""
+  access_ttl: 15m
+  refresh_ttl: 168h  # 7 days
+
+# Rate-limiting policies per user tier.
+# Each tier maps to an algorithm with its configuration.
+tiers:
+  free:
+    algorithm: fixed_window
+    limit: 10        # 10 requests
+    window: 1m       # per 1 minute
+    burst: 0         # not used for fixed_window
+
+  premium:
+    algorithm: token_bucket
+    limit: 100       # 100 requests
+    window: 1m       # per 1 minute
+    burst: 20        # burst capacity of 20
