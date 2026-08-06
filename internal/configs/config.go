@@ -10,11 +10,11 @@ import (
 
 // Config holds all application configuration.
 type Config struct {
-	Server   ServerConfig            `mapstructure:"server"`
-	Database DatabaseConfig          `mapstructure:"database"`
-	Redis    RedisConfig             `mapstructure:"redis"`
-	JWT      JWTConfig               `mapstructure:"jwt"`
-	Tiers    map[string]TierConfig   `mapstructure:"tiers"`
+	Server   ServerConfig          `mapstructure:"server"`
+	Database DatabaseConfig        `mapstructure:"database"`
+	Redis    RedisConfig           `mapstructure:"redis"`
+	JWT      JWTConfig             `mapstructure:"jwt"`
+	Tiers    map[string]TierConfig `mapstructure:"tiers"`
 }
 
 // ServerConfig holds HTTP server settings.
@@ -32,7 +32,7 @@ type DatabaseConfig struct {
 	Name     string `mapstructure:"name"`
 }
 
-// DSN returns the MySQL data source name.
+// DSN(Data Source Name) returns the MySQL data source name.
 func (d DatabaseConfig) DSN() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&charset=utf8mb4&collation=utf8mb4_unicode_ci",
 		d.User, d.Password, d.Host, d.Port, d.Name,
@@ -124,10 +124,10 @@ func (c *Config) validate() error {
 	}
 	for name, tier := range c.Tiers {
 		validAlgorithms := map[string]bool{
-			"fixed_window":  true,
+			"fixed_window":   true,
 			"sliding_window": true,
-			"sliding_log":   true,
-			"token_bucket":  true,
+			"sliding_log":    true,
+			"token_bucket":   true,
 		}
 		if !validAlgorithms[tier.Algorithm] {
 			return fmt.Errorf("tier %q has invalid algorithm %q", name, tier.Algorithm)

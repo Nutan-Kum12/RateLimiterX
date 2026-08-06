@@ -13,8 +13,8 @@ type RateLimitPolicy struct {
 
 // Algorithm name constants.
 const (
-	AlgorithmFixedWindow  = "fixed_window"
+	AlgorithmFixedWindow   = "fixed_window"
 	AlgorithmSlidingWindow = "sliding_window"
-	AlgorithmSlidingLog   = "sliding_log"
-	AlgorithmTokenBucket  = "token_bucket"
+	AlgorithmSlidingLog    = "sliding_log"
+	AlgorithmTokenBucket   = "token_bucket"
 )
