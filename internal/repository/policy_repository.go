@@ -40,7 +40,8 @@ func (r *configPolicyRepository) GetByTier(tier string) (*model.RateLimitPolicy,
 	if !ok {
 		return nil, fmt.Errorf("no policy found for tier: %s", tier)
 	}
-	return policy, nil
+	copied := *policy
+	return &copied, nil
 }
 
 // GetAll returns all configured rate-limit policies keyed by tier name.
