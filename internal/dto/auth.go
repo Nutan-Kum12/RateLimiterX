@@ -27,7 +27,7 @@ type UserInfo struct {
 }
 
 // UpdateTierRequest is the payload for updating a user's tier.
-type UpdateTierRequest struct {
-	UserID string `json:"user_id" binding:"required"`
-	Tier   string `json:"tier" binding:"required,oneof=free premium"`
-}
+// type UpdateTierRequest struct {
+// 	UserID string `json:"user_id" binding:"required"`
+// 	Tier   string `json:"tier" binding:"required,oneof=free premium"`
+// }

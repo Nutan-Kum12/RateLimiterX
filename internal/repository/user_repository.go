@@ -13,7 +13,7 @@ type UserRepository interface {
 	Create(ctx context.Context, user *model.User) error
 	FindByEmail(ctx context.Context, email string) (*model.User, error)
 	FindByID(ctx context.Context, id string) (*model.User, error)
-	UpdateTier(ctx context.Context, id string, tier string) error
+	// UpdateTier(ctx context.Context, id string, tier string) error
 }
 
 // mysqlUserRepository implements UserRepository using MySQL.
@@ -78,22 +78,22 @@ func (r *mysqlUserRepository) FindByID(ctx context.Context, id string) (*model.U
 }
 
 // UpdateTier changes the tier for a specific user.
-func (r *mysqlUserRepository) UpdateTier(ctx context.Context, id string, tier string) error {
-	query := `UPDATE users SET tier = ?, updated_at = NOW()
-	          WHERE id = ?`
+// func (r *mysqlUserRepository) UpdateTier(ctx context.Context, id string, tier string) error {
+// 	query := `UPDATE users SET tier = ?, updated_at = NOW()
+// 	          WHERE id = ?`
 
-	result, err := r.db.ExecContext(ctx, query, tier, id)
-	if err != nil {
-		return fmt.Errorf("failed to update user tier: %w", err)
-	}
+// 	result, err := r.db.ExecContext(ctx, query, tier, id)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to update user tier: %w", err)
+// 	}
 
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("failed to check affected rows: %w", err)
-	}
-	if rows == 0 {
-		return fmt.Errorf("user not found with ID: %s", id)
-	}
+// 	rows, err := result.RowsAffected()
+// 	if err != nil {
+// 		return fmt.Errorf("failed to check affected rows: %w", err)
+// 	}
+// 	if rows == 0 {
+// 		return fmt.Errorf("user not found with ID: %s", id)
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
