@@ -94,6 +94,5 @@ func (r *mysqlUserRepository) FindByID(ctx context.Context, id string) (*model.U
 // 	if rows == 0 {
 // 		return fmt.Errorf("user not found with ID: %s", id)
 // 	}
-
 // 	return nil
 // }

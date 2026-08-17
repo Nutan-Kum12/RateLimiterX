@@ -48,17 +48,14 @@ func (s *userService) GetProfile(ctx context.Context, userID string) (*dto.UserI
 // 	if !model.IsValidTier(tier) {
 // 		return nil, fmt.Errorf("invalid tier: %s", tier)
 // 	}
-
 // 	// Update tier in the database
 // 	if err := s.userRepo.UpdateTier(ctx, userID, tier); err != nil {
 // 		return nil, fmt.Errorf("failed to update tier: %w", err)
 // 	}
-
 // 	logger.Log.Info("user tier updated",
 // 		zap.String("user_id", userID),
 // 		zap.String("new_tier", tier),
 // 	)
-
 // 	// Return updated profile
 // 	return s.GetProfile(ctx, userID)
 // }

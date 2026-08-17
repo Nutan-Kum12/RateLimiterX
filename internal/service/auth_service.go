@@ -82,15 +82,15 @@ func (s *authService) Login(ctx context.Context, req dto.LoginRequest) (*dto.Aut
 	// Find user by email
 	user, err := s.userRepo.FindByEmail(ctx, req.Email)
 	if err != nil {
-		return nil, fmt.Errorf("failed to find user: %w", err)
+		return nil, fmt.Errorf("invalid credentials: %w", err)
 	}
 	if user == nil {
-		return nil, fmt.Errorf("invalid email or password")
+		return nil, fmt.Errorf("invalid credentials")
 	}
 
 	// Verify password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-		return nil, fmt.Errorf("invalid email or password")
+		return nil, fmt.Errorf("invalid credentials")
 	}
 
 	logger.Log.Info("user logged in successfully",
