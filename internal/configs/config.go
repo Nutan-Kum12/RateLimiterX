@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -65,6 +66,7 @@ type TierConfig struct {
 // Load reads configuration from the YAML file and environment variables.
 // It looks for config/config.yaml relative to the working directory.
 func Load(configPath string) (*Config, error) {
+	_ = godotenv.Load()
 	v := viper.New()
 
 	v.SetConfigName("config")
@@ -74,7 +76,6 @@ func Load(configPath string) (*Config, error) {
 	v.AddConfigPath("./config")
 
 	// Allow environment variables to override config values.
-	// e.g., RATELIMITERX_DATABASE_PASSWORD overrides database.password
 	v.SetEnvPrefix("RATELIMITERX")
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
@@ -95,7 +96,6 @@ func Load(configPath string) (*Config, error) {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return nil, fmt.Errorf("failed to read config file: %w", err)
 		}
-		// Config file not found — rely on defaults and env vars
 	}
 
 	var cfg Config

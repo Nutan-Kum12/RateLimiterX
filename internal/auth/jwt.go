@@ -37,41 +37,32 @@ func NewJWTManager(accessSecret, refreshSecret string, accessTTL, refreshTTL tim
 
 // GenerateAccessToken creates a short-lived access token for authentication.
 func (m *JWTManager) GenerateAccessToken(userID, email, tier string) (string, error) {
+	return m.generateToken(userID, email, tier, "access", m.accessTTL, m.accessSecret)
+}
+
+// GenerateRefreshToken creates a long-lived refresh token for token renewal.
+func (m *JWTManager) GenerateRefreshToken(userID, email string) (string, error) {
+	return m.generateToken(userID, email, "", "refresh", m.refreshTTL, m.refreshSecret)
+}
+func (m *JWTManager) generateToken(userID, email string, tier string, tokenType string, ttl time.Duration, secret []byte) (string, error) {
 	now := time.Now()
 	claims := Claims{
 		UserID: userID,
 		Email:  email,
 		Tier:   tier,
-		Type:   "access",
+		Type:   tokenType,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(now.Add(m.accessTTL)),
+			ExpiresAt: jwt.NewNumericDate(now.Add(ttl)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			Subject:   userID,
 			Issuer:    "ratelimiterx",
 		},
 	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(m.accessSecret)
-}
-
-// GenerateRefreshToken creates a long-lived refresh token for token renewal.
-func (m *JWTManager) GenerateRefreshToken(userID, email string) (string, error) {
-	now := time.Now()
-	claims := Claims{
-		UserID: userID,
-		Email:  email,
-		Type:   "refresh",
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(now.Add(m.refreshTTL)),
-			IssuedAt:  jwt.NewNumericDate(now),
-			Subject:   userID,
-			Issuer:    "ratelimiterx",
-		},
+	if tokenType == "access" {
+		claims.Tier = tier
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(m.refreshSecret)
+	return token.SignedString(secret)
 }
 
 // ParseAccessToken validates and parses an access token string.

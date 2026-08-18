@@ -10,15 +10,7 @@ import (
 
 // NewLimiter is the factory function that creates the appropriate Limiter
 // implementation based on the algorithm name specified in the policy.
-//
-// This implements the Factory Pattern: the caller doesn't need to know
-// which concrete type to instantiate — just pass the algorithm name.
-//
-// Supported algorithms:
-//   - "fixed_window"  → FixedWindowLimiter
-//   - "sliding_window" → SlidingWindowLimiter
-//   - "sliding_log"   → SlidingLogLimiter
-//   - "token_bucket"  → TokenBucketLimiter
+
 func NewLimiter(algorithm string, client *redis.Client, policy *model.RateLimitPolicy) (Limiter, error) {
 	switch algorithm {
 	case model.AlgorithmFixedWindow:
