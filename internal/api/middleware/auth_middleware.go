@@ -47,6 +47,7 @@ func AuthMiddleware(jwtManager *auth.JWTManager) gin.HandlerFunc {
 		// Set user info in context for downstream handlers and middleware
 		c.Set("userID", claims.UserID)
 		// c.Set("email", claims.Email)
+		c.Set("tier", claims.Tier)
 
 		c.Next()
 	}
