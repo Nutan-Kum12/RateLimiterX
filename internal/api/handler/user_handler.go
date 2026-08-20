@@ -22,7 +22,7 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 // GetProfile handles GET /api/v1/users/me
 // Returns the authenticated user's profile.
 func (h *UserHandler) GetProfile(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	_, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, dto.NewErrorResponse(
 			"authentication required",
@@ -31,7 +31,7 @@ func (h *UserHandler) GetProfile(c *gin.Context) {
 		return
 	}
 
-	profile, err := h.userService.GetProfile(c.Request.Context(), userID.(string))
+	profile, err := h.userService.GetProfile(c.Request.Context(), c.GetString("userID"))
 	if err != nil {
 		c.JSON(http.StatusNotFound, dto.NewErrorResponse(
 			"user not found",

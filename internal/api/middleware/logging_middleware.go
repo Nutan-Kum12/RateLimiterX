@@ -46,7 +46,9 @@ func LoggingMiddleware() gin.HandlerFunc {
 
 		// Add user ID if present
 		if userID, exists := c.Get("userID"); exists {
-			fields = append(fields, zap.String("user_id", userID.(string)))
+			if userIDStr, ok := userID.(string); ok {
+				fields = append(fields, zap.String("user_id", userIDStr))
+			}
 		}
 
 		// Log at appropriate level based on status code
