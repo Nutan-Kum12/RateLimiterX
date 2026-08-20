@@ -11,26 +11,26 @@ import (
 
 // Config holds all application configuration.
 type Config struct {
-	Server   ServerConfig          `mapstructure:"server"`
+	Tiers    map[string]TierConfig `mapstructure:"tiers"`
 	Database DatabaseConfig        `mapstructure:"database"`
 	Redis    RedisConfig           `mapstructure:"redis"`
+	Server   ServerConfig          `mapstructure:"server"`
 	JWT      JWTConfig             `mapstructure:"jwt"`
-	Tiers    map[string]TierConfig `mapstructure:"tiers"`
 }
 
 // ServerConfig holds HTTP server settings.
 type ServerConfig struct {
-	Port int    `mapstructure:"port"`
 	Mode string `mapstructure:"mode"` // "debug" | "release" | "test"
+	Port int    `mapstructure:"port"`
 }
 
 // DatabaseConfig holds MySQL connection settings.
 type DatabaseConfig struct {
 	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
 	User     string `mapstructure:"user"`
 	Password string `mapstructure:"password"`
 	Name     string `mapstructure:"name"`
+	Port     int    `mapstructure:"port"`
 }
 
 // DSN(Data Source Name) returns the MySQL data source name.

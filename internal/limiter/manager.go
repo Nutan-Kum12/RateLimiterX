@@ -28,7 +28,7 @@ func NewManager(client *redis.Client, policyRepo repository.PolicyRepository) (*
 	limiters := make(map[string]Limiter, len(policies))
 
 	for tier, policy := range policies {
-		l, err := NewLimiter(policy.Algorithm, client, policy) //call factory
+		l, err := NewLimiter(policy.Algorithm, client, policy) // call factory
 		if err != nil {
 			return nil, fmt.Errorf("failed to create limiter for tier %q: %w", tier, err)
 		}

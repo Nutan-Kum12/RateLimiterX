@@ -36,10 +36,6 @@ linters-settings:
       - G101
       - G304
 
-  gocritic:
-    disabled-checks:
-      - commentedOutCode
-
 issues:
   exclude-rules:
     - path: "_test\\.go"

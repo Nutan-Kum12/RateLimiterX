@@ -41,5 +41,3 @@ func (s *userService) GetProfile(ctx context.Context, userID string) (*dto.UserI
 		Tier:  user.Tier,
 	}, nil
 }
-
-// UpdateTier is not yet implemented.

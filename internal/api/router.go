@@ -53,7 +53,7 @@ func NewRouter(mode string, deps RouterDeps) *gin.Engine {
 			authGroup.POST("/register", authHandler.Register)
 			authGroup.POST("/login", authHandler.Login)
 		}
-		//Protected toutes
+		// Protected toutes
 		protected := v1.Group("")
 		protected.Use(middleware.AuthMiddleware(deps.JWTManager))
 		protected.Use(middleware.RateLimitMiddleware(deps.LimiterManager))
