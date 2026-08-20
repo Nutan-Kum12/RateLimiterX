@@ -7,10 +7,10 @@ import (
 
 // Result holds the outcome of a rate-limit check.
 type Result struct {
-	Allowed   bool      // Whether the request is permitted
-	Remaining int       // How many requests remain in the current window
 	ResetAt   time.Time // When the current window resets
+	Remaining int       // How many requests remain in the current window
 	Limit     int       // The configured maximum requests
+	Allowed   bool      // Whether the request is permitted
 }
 
 // Limiter is the strategy interface that all rate-limiting algorithms implement.

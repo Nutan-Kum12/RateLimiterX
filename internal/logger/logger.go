@@ -10,8 +10,8 @@ import (
 
 // Log is the global logger instance.
 var (
-	Log  *zap.Logger //store the logger for entire application
-	once sync.Once   //ensure the logger is initialized once
+	Log  *zap.Logger // store the logger for entire application
+	once sync.Once   // ensure the logger is initialized once
 )
 
 // Init initializes the global logger based on the application mode.
@@ -27,14 +27,14 @@ func Init(mode string) {
 			config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 			config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 		} else {
-			config = zap.NewProductionConfig() //Logs are JSON
+			config = zap.NewProductionConfig() // Logs are JSON
 			config.EncoderConfig.TimeKey = "timestamp"
 			config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 		}
 
 		var err error
-		Log, err = config.Build( //creates the logger
-			zap.AddCaller(), //Add the file and line number
+		Log, err = config.Build( // creates the logger
+			zap.AddCaller(), // Add the file and line number
 			zap.AddCallerSkip(0),
 			zap.AddStacktrace(zapcore.ErrorLevel),
 		)
@@ -74,4 +74,4 @@ func Fatal(msg string, fields ...zap.Field) {
 	os.Exit(1)
 }
 
-//Single Design Pattern
+// Single Design Pattern

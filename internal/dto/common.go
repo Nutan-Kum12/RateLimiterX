@@ -2,10 +2,10 @@ package dto
 
 // APIResponse is the standard API response envelope.
 type APIResponse struct {
-	Success bool        `json:"success"`
 	Message string      `json:"message,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
 	Error   string      `json:"error,omitempty"`
+	Success bool        `json:"success"`
 }
 
 // NewSuccessResponse creates a successful API response.
@@ -28,15 +28,15 @@ func NewErrorResponse(message string, err string) APIResponse {
 
 // HealthResponse contains service health status details.
 type HealthResponse struct {
-	Status   string            `json:"status"`
 	Services map[string]string `json:"services"`
+	Status   string            `json:"status"`
 }
 
 // RateLimitInfoResponse shows rate-limit status to the client.
 type RateLimitInfoResponse struct {
-	Limit     int    `json:"limit"`
-	Remaining int    `json:"remaining"`
 	ResetAt   string `json:"reset_at"`
 	Tier      string `json:"tier"`
 	Algorithm string `json:"algorithm"`
+	Limit     int    `json:"limit"`
+	Remaining int    `json:"remaining"`
 }

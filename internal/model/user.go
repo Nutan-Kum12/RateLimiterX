@@ -3,12 +3,12 @@ package model
 import "time"
 
 type User struct {
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 	ID        string    `json:"id" db:"id"`
 	Email     string    `json:"email" db:"email"`
 	Password  string    `json:"-" db:"password"`
 	Tier      string    `json:"tier" db:"tier"` // "free" | "premium"
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // Tier constants for user classification.

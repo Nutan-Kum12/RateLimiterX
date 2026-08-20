@@ -42,20 +42,4 @@ func (s *userService) GetProfile(ctx context.Context, userID string) (*dto.UserI
 	}, nil
 }
 
-// UpdateTier changes a user's tier (e.g., free → premium).
-// func (s *userService) UpdateTier(ctx context.Context, userID string, tier string) (*dto.UserInfo, error) {
-// 	// Validate tier value
-// 	if !model.IsValidTier(tier) {
-// 		return nil, fmt.Errorf("invalid tier: %s", tier)
-// 	}
-// 	// Update tier in the database
-// 	if err := s.userRepo.UpdateTier(ctx, userID, tier); err != nil {
-// 		return nil, fmt.Errorf("failed to update tier: %w", err)
-// 	}
-// 	logger.Log.Info("user tier updated",
-// 		zap.String("user_id", userID),
-// 		zap.String("new_tier", tier),
-// 	)
-// 	// Return updated profile
-// 	return s.GetProfile(ctx, userID)
-// }
+// UpdateTier is not yet implemented.

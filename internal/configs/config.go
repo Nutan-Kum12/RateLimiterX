@@ -82,7 +82,7 @@ func Load(configPath string) (*Config, error) {
 
 	// Set sensible defaults
 	v.SetDefault("server.port", 8080)
-	v.SetDefault("server.mode", "debug")
+	v.SetDefault("server.mode", "release")
 	v.SetDefault("database.host", "localhost")
 	v.SetDefault("database.port", 3306)
 	v.SetDefault("database.user", "root")

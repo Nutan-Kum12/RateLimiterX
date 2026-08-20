@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -76,7 +76,7 @@ func TestMiddleware_AuthRequired(t *testing.T) {
 
 	// Request without auth header
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusUnauthorized {
@@ -95,7 +95,7 @@ func TestMiddleware_ValidAuth(t *testing.T) {
 	}
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 	router.ServeHTTP(w, req)
 
@@ -128,7 +128,7 @@ func TestMiddleware_RateLimitExceeded(t *testing.T) {
 	// Send requests up to the limit
 	for i := 0; i < limit; i++ {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/test", nil)
+		req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
 		req.Header.Set("Authorization", "Bearer "+token)
 		router.ServeHTTP(w, req)
 
@@ -139,7 +139,7 @@ func TestMiddleware_RateLimitExceeded(t *testing.T) {
 
 	// Next request should be rate limited
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 	router.ServeHTTP(w, req)
 
@@ -165,7 +165,7 @@ func TestMiddleware_InvalidToken(t *testing.T) {
 	defer cleanup()
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
 	req.Header.Set("Authorization", "Bearer invalid-token")
 	router.ServeHTTP(w, req)
 
@@ -183,19 +183,13 @@ func TestMiddleware_ExpiredToken(t *testing.T) {
 	token, _ := shortJWT.GenerateAccessToken("user-123", "test@test.com", "free")
 
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/test", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusUnauthorized {
 		t.Errorf("expected 401 for expired token, got %d", w.Code)
 	}
-}
-
-// Helpers
-func jsonBody(v interface{}) *bytes.Buffer {
-	b, _ := json.Marshal(v)
-	return bytes.NewBuffer(b)
 }
 
 // Ensure model package is used
