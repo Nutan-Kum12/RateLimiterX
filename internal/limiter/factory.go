@@ -15,10 +15,6 @@ func NewLimiter(algorithm string, client *redis.Client, policy *model.RateLimitP
 	switch algorithm {
 	case model.AlgorithmFixedWindow:
 		return NewFixedWindowLimiter(client, policy), nil
-	case model.AlgorithmSlidingWindow:
-		return NewSlidingWindowLimiter(client, policy), nil
-	case model.AlgorithmSlidingLog:
-		return NewSlidingLogLimiter(client, policy), nil
 	case model.AlgorithmTokenBucket:
 		return NewTokenBucketLimiter(client, policy), nil
 	default:
