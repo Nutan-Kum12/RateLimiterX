@@ -1,6 +1,6 @@
 server:
   port: 8080
-  mode: debug  # debug | release | test
+  mode: release  # debug | release | test
 
 database:
   host: localhost
