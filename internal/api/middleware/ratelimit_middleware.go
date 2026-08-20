@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -34,10 +35,14 @@ func RateLimitMiddleware(manager *limiter.Manager) gin.HandlerFunc {
 		}
 
 		// Check rate limit
-		result, policy, err := manager.AllowRequest(c.Request.Context(), userID.(string), tierStr)
+		userIDStr, ok2 := userID.(string)
+		if !ok2 {
+			userIDStr = fmt.Sprintf("%v", userID)
+		}
+		result, policy, err := manager.AllowRequest(c.Request.Context(), userIDStr, tierStr)
 		if err != nil {
 			logger.Log.Error("rate limit check failed",
-				zap.String("user_id", userID.(string)),
+				zap.String("user_id", userIDStr),
 				zap.String("tier", tierStr),
 				zap.Error(err),
 			)
@@ -67,7 +72,7 @@ func RateLimitMiddleware(manager *limiter.Manager) gin.HandlerFunc {
 			c.Header("Retry-After", strconv.Itoa(int(retryAfter)))
 
 			logger.Log.Warn("rate limit exceeded",
-				zap.String("user_id", userID.(string)),
+				zap.String("user_id", userIDStr),
 				zap.String("tier", tierStr),
 				zap.String("algorithm", algorithmName),
 				zap.Int("limit", result.Limit),
