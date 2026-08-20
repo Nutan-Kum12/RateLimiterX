@@ -2,23 +2,12 @@
 services:
   # ── Application Server ──
   app:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    image: ghcr.io/nutan-kum12/ratelimiterx:latest
     container_name: ratelimiterx-app
     ports:
       - "8080:8080"
-    environment:
-      - RATELIMITERX_SERVER_PORT=8080
-      - RATELIMITERX_SERVER_MODE=debug
-      - RATELIMITERX_DATABASE_HOST=mysql
-      - RATELIMITERX_DATABASE_PORT=3306
-      - RATELIMITERX_DATABASE_USER=root
-      - RATELIMITERX_DATABASE_PASSWORD=rootpassword
-      - RATELIMITERX_DATABASE_NAME=ratelimiterx
-      - RATELIMITERX_REDIS_ADDR=redis:6379
-      - RATELIMITERX_JWT_ACCESS_SECRET=my-super-secret-access-key
-      - RATELIMITERX_JWT_REFRESH_SECRET=my-super-secret-refresh-key
+    env_file:
+      - ../.env
     depends_on:
       mysql:
         condition: service_healthy
