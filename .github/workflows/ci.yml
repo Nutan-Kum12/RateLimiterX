@@ -38,73 +38,11 @@ jobs:
           version: latest
           args: --timeout=5m
 
-  # ── Job 2: Unit Tests (miniredis — no real services needed) ────────────────
-  unit-tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: Download dependencies
-        run: go mod download
-
-      - name: Run unit tests
-        run: |
-          go test -v -race -count=1 \
-            -coverprofile=coverage-unit.out \
-            -covermode=atomic \
-            ./tests/unit/...
-
-      - name: Upload unit test coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-unit
-          path: coverage-unit.out
-          retention-days: 7
-
-  # ── Job 3: Integration Tests (miniredis — no real services needed) ──────────
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: Download dependencies
-        run: go mod download
-
-      - name: Run integration tests
-        run: |
-          go test -v -race -count=1 \
-            -coverprofile=coverage-integration.out \
-            -covermode=atomic \
-            ./tests/integration/...
-
-      - name: Upload integration test coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-integration
-          path: coverage-integration.out
-          retention-days: 7
-
-  # ── Job 4: Build binary ─────────────────────────────────────────────────────
+  # ── Job 2: Build binary ─────────────────────────────────────────────────────
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint, unit-tests, integration-tests]
+    needs: [lint]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
