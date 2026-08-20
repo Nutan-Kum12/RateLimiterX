@@ -31,6 +31,7 @@ jobs:
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.64.8
+          install-mode: goinstall
           args: --timeout=5m
 
   # ── Job 2: Build binary ─────────────────────────────────────────────────────
