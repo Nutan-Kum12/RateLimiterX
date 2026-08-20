@@ -1,0 +1,109 @@
+
+services:
+  # ── Application Server ──
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: ratelimiterx-app
+    ports:
+      - "8080:8080"
+    environment:
+      - RATELIMITERX_SERVER_PORT=8080
+      - RATELIMITERX_SERVER_MODE=debug
+      - RATELIMITERX_DATABASE_HOST=mysql
+      - RATELIMITERX_DATABASE_PORT=3306
+      - RATELIMITERX_DATABASE_USER=root
+      - RATELIMITERX_DATABASE_PASSWORD=rootpassword
+      - RATELIMITERX_DATABASE_NAME=ratelimiterx
+      - RATELIMITERX_REDIS_ADDR=redis:6379
+      - RATELIMITERX_JWT_ACCESS_SECRET=my-super-secret-access-key
+      - RATELIMITERX_JWT_REFRESH_SECRET=my-super-secret-refresh-key
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - ratelimiterx
+
+  # ── MySQL Database ──
+  mysql:
+    image: mysql:8.0
+    container_name: ratelimiterx-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ratelimiterx
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - ratelimiterx
+
+  # ── Redis Cache ──
+  redis:
+    image: redis:7-alpine
+    container_name: ratelimiterx-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - ratelimiterx
+
+  # ── Prometheus Monitoring ──
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ratelimiterx-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - ratelimiterx
+
+  # ── Grafana Dashboard ──
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ratelimiterx-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    networks:
+      - ratelimiterx
+
+volumes:
+  mysql_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  ratelimiterx:
+    driver: bridge
