@@ -1,0 +1,59 @@
+run:
+  timeout: 5m
+  go: "1.24"
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck        # Check that errors are handled
+    - gosimple        # Simplification suggestions
+    - govet           # go vet checks
+    - ineffassign     # Detect unused variable assignments
+    - staticcheck     # Staticcheck suite
+    - unused          # Check for unused code
+    - gofmt           # Code formatting
+    - goimports       # Import ordering
+    - misspell        # Spelling mistakes in comments/strings
+    - gosec           # Security issues
+    - bodyclose       # HTTP response body close check
+    - noctx           # HTTP requests without context
+    - revive          # Fast, extensible linter (replaces golint)
+    - gocritic        # Various code checks
+
+linters-settings:
+  govet:
+    enable-all: true
+    disable:
+      - shadow       # Too noisy
+
+  revive:
+    rules:
+      - name: exported
+        disabled: true   # Don't require doc comments on every export
+
+  gosec:
+    excludes:
+      - G101  # Potential hardcoded credentials (false positives in config keys)
+      - G304  # File path provided as taint input (common in config loaders)
+
+  gocritic:
+    disabled-checks:
+      - commentedOutCode
+
+issues:
+  exclude-rules:
+    # Test files are more lenient
+    - path: "_test\\.go"
+      linters:
+        - errcheck
+        - gosec
+        - gocritic
+
+    # Ignore auto-generated or migration files
+    - path: "migrations/"
+      linters:
+        - all
+
+  # Maximum issues per linter, 0 = unlimited
+  max-issues-per-linter: 50
+  max-same-issues: 5
