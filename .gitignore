@@ -1,0 +1,40 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/server
+.dockerignore
+
+# Build output
+/bin/
+/dist/
+
+# Test binary
+*.test
+
+# Coverage
+*.out
+coverage.html
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+
+# Logs
+*.log
+
+#folder
+.documentaTion
+# pkg/ratelimiter/ratelimiter.go
+pkg/ratelimiter/ratelimiter_test.go
