@@ -1,4 +1,4 @@
-module github.com/Nutan-Kum12/RateLimiterX.git
+module github.com/Nutan-Kum12/RateLimiterX
 
 go 1.25.0
 

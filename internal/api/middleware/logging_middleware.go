@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/logger"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/logger"
 )
 
 // LoggingMiddleware creates a Gin middleware that logs each HTTP request

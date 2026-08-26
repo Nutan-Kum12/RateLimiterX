@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/limiter"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/model"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/limiter"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/model"
 )
 
 func TestTokenBucket_AllowWithinBurst(t *testing.T) {

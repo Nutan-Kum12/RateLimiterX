@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/metrics"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/metrics"
 )
 
 // MetricsMiddleware creates a Gin middleware that records Prometheus metrics

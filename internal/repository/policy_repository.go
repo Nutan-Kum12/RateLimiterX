@@ -3,8 +3,8 @@ package repository
 import (
 	"fmt"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/configs"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/model"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/configs"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/model"
 )
 
 // PolicyRepository defines the interface for accessing rate-limit policies.

@@ -9,8 +9,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/configs"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/logger"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/configs"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/logger"
 )
 
 // NewConnection creates and configures a MySQL connection pool.

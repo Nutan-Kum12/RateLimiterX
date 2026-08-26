@@ -6,11 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/api/handler"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/api/middleware"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/auth"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/limiter"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/service"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/api/handler"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/api/middleware"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/auth"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/limiter"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/service"
 )
 
 // RouterDeps contains all dependencies needed to set up the router.

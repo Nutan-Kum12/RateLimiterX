@@ -12,13 +12,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/api/middleware"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/auth"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/configs"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/limiter"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/logger"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/model"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/repository"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/api/middleware"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/auth"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/configs"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/limiter"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/logger"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/model"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/repository"
 )
 
 func init() {

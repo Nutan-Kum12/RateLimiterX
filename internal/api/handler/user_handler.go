@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/dto"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/service"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/dto"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/service"
 )
 
 // UserHandler handles user-related HTTP requests.
@@ -22,14 +22,14 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 // GetProfile handles GET /api/v1/users/me
 // Returns the authenticated user's profile.
 func (h *UserHandler) GetProfile(c *gin.Context) {
-	_, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, dto.NewErrorResponse(
-			"authentication required",
-			"user ID not found in context",
-		))
-		return
-	}
+	// userID, exists := c.Get("userID")
+	// if !exists {
+	// 	c.JSON(http.StatusUnauthorized, dto.NewErrorResponse(
+	// 		"authentication required",
+	// 		"user ID not found in context",
+	// 	))
+	// 	return
+	// }
 
 	profile, err := h.userService.GetProfile(c.Request.Context(), c.GetString("userID"))
 	if err != nil {

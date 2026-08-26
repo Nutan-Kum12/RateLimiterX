@@ -11,15 +11,15 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/api"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/auth"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/configs"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/limiter"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/logger"
-	internalMySQL "github.com/Nutan-Kum12/RateLimiterX.git/internal/mysql"
-	internalRedis "github.com/Nutan-Kum12/RateLimiterX.git/internal/redis"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/repository"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/service"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/api"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/auth"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/configs"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/limiter"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/logger"
+	internalMySQL "github.com/Nutan-Kum12/RateLimiterX/internal/mysql"
+	internalRedis "github.com/Nutan-Kum12/RateLimiterX/internal/redis"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/repository"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/service"
 )
 
 // SQL migrations to run on startup.

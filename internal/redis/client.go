@@ -8,8 +8,8 @@ import (
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/configs"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/logger"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/configs"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/logger"
 )
 
 // NewClient creates and validates a new Redis client connection.

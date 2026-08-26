@@ -7,7 +7,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/model"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/model"
 )
 
 // FixedWindowLimiter implements the Fixed Window Counter algorithm.

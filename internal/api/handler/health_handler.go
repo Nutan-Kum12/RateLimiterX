@@ -10,7 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/dto"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/dto"
 )
 
 // HealthHandler handles health and metrics endpoints.
@@ -19,7 +19,6 @@ type HealthHandler struct {
 	redisClient *redis.Client
 }
 
-// NewHealthHandler creates a new HealthHandler.
 func NewHealthHandler(db *sql.DB, redisClient *redis.Client) *HealthHandler {
 	return &HealthHandler{
 		db:          db,
@@ -27,7 +26,6 @@ func NewHealthHandler(db *sql.DB, redisClient *redis.Client) *HealthHandler {
 	}
 }
 
-// Health handles GET /health
 // Returns the health status of all dependent services.
 func (h *HealthHandler) Health(c *gin.Context) {
 	services := make(map[string]string)

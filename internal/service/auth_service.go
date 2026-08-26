@@ -9,11 +9,11 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/auth"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/dto"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/logger"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/model"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/repository"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/auth"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/dto"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/logger"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/model"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/repository"
 )
 
 // AuthService defines the interface for authentication business logic.

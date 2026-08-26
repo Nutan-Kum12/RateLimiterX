@@ -9,10 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/dto"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/limiter"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/logger"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/metrics"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/dto"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/limiter"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/logger"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/metrics"
 )
 
 // RateLimitMiddleware creates a Gin middleware that enforces rate limits

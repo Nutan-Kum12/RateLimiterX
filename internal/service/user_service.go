@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/dto"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/repository"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/dto"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/repository"
 )
 
 // UserService defines the interface for user management business logic.

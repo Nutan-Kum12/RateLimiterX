@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/dto"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/service"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/dto"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/service"
 )
 
 // AuthHandler handles authentication-related HTTP requests.
@@ -19,8 +19,6 @@ func NewAuthHandler(authService service.AuthService) *AuthHandler {
 	return &AuthHandler{authService: authService}
 }
 
-// Register handles POST /api/v1/auth/register
-// Creates a new user with the "free" tier and returns JWT tokens.
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -33,7 +31,6 @@ func (h *AuthHandler) Register(c *gin.Context) {
 
 	resp, err := h.authService.Register(c.Request.Context(), req)
 	if err != nil {
-		// Check if it's a duplicate email error
 		c.JSON(http.StatusConflict, dto.NewErrorResponse(
 			"registration failed",
 			err.Error(),
@@ -44,7 +41,6 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, dto.NewSuccessResponse("user registered successfully", resp))
 }
 
-// Login handles POST /api/v1/auth/login
 // Validates credentials and returns JWT tokens.
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest

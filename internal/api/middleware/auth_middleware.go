@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/auth"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/dto"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/auth"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/dto"
 )
 
 // AuthMiddleware creates a Gin middleware that validates JWT access tokens.

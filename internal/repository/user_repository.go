@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/model"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/model"
 )
 
 // UserRepository defines the interface for user persistence operations.

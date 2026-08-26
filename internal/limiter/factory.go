@@ -5,12 +5,11 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/model"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/model"
 )
 
 // NewLimiter is the factory function that creates the appropriate Limiter
 // implementation based on the algorithm name specified in the policy.
-
 func NewLimiter(algorithm string, client *redis.Client, policy *model.RateLimitPolicy) (Limiter, error) {
 	switch algorithm {
 	case model.AlgorithmFixedWindow:

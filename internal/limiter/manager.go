@@ -7,9 +7,9 @@ import (
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/logger"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/model"
-	"github.com/Nutan-Kum12/RateLimiterX.git/internal/repository"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/logger"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/model"
+	"github.com/Nutan-Kum12/RateLimiterX/internal/repository"
 )
 
 // Manager orchestrates rate limiting by mapping user tiers to their

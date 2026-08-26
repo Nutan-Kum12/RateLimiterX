@@ -44,6 +44,7 @@ func (m *JWTManager) GenerateAccessToken(userID, email, tier string) (string, er
 func (m *JWTManager) GenerateRefreshToken(userID, email string) (string, error) {
 	return m.generateToken(userID, email, "", "refresh", m.refreshTTL, m.refreshSecret)
 }
+
 func (m *JWTManager) generateToken(userID, email string, tier string, tokenType string, ttl time.Duration, secret []byte) (string, error) {
 	now := time.Now()
 	claims := Claims{
