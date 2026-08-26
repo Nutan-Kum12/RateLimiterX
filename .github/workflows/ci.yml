@@ -95,11 +95,42 @@ jobs:
           path: coverage-integration.out
           retention-days: 7
 
+  # Job 3b: pkg/ratelimiter Tests  (miniredis — no external services needed)
+  pkg-tests:
+    name: Pkg Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run pkg/ratelimiter tests
+        run: |
+          go test -v -race -count=1 \
+            -coverprofile=coverage-pkg.out \
+            -covermode=atomic \
+            ./pkg/ratelimiter/...
+
+      - name: Upload pkg test coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-pkg
+          path: coverage-pkg.out
+          retention-days: 7
+
   # Job 4: Merge Coverage & Report
   coverage:
     name: Coverage Report
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests]
+    needs: [unit-tests, integration-tests, pkg-tests]
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -120,10 +151,15 @@ jobs:
         with:
           name: coverage-integration
 
+      - name: Download pkg coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-pkg
+
       - name: Merge coverage files
         run: |
           go install github.com/wadey/gocovmerge@latest
-          gocovmerge coverage-unit.out coverage-integration.out > coverage.out
+          gocovmerge coverage-unit.out coverage-integration.out coverage-pkg.out > coverage.out
 
       - name: Print coverage summary
         run: go tool cover -func=coverage.out | tail -1
@@ -141,7 +177,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint, unit-tests, integration-tests]
+    needs: [lint, unit-tests, integration-tests, pkg-tests]
     steps:
       - name: Checkout code
         uses: actions/checkout@v5

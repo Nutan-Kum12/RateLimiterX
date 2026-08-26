@@ -9,6 +9,7 @@ A **production-grade, distributed, extensible rate-limiting framework** and exam
 ## ✨ Features
 
 - **2 Production-Ready Algorithms**: Fixed Window & Token Bucket (fully tracked; Sliding Window & Sliding Log available locally)
+- **`pkg/ratelimiter` Embeddable Library**: Drop-in Gin middleware you can import directly — supports **Fixed Window** and **Token Bucket**
 - **Redis-Backed Distributed State**: Atomic Lua scripts ensure correctness across multiple instances
 - **JWT Authentication**: Register & Login with access (15 min) and refresh (7 day) tokens
 - **Tier-Based Rate Policies**: `free` and `premium` tiers with independent algorithm + limit configs
@@ -147,12 +148,12 @@ Retry-After: 45
 
 ## ⚡ Rate-Limiting Algorithms
 
-| Algorithm | Status | Best For | Memory |
-|-----------|--------|----------|--------|
-| **Fixed Window** | ✅ Tracked | Simple, low-overhead limiting | Very Low |
-| **Token Bucket** | ✅ Tracked | Bursty traffic with burst capacity | Low |
-| **Sliding Window** | 🔧 Local only | Smooth boundary limiting | Low |
-| **Sliding Log** | 🔧 Local only | Highest accuracy, per-request timestamps | High |
+| Algorithm | Status | `pkg/` Support | Best For | Memory |
+|-----------|--------|---------------|----------|--------|
+| **Fixed Window** | ✅ Tracked | ✅ Yes | Simple, low-overhead limiting | Very Low |
+| **Token Bucket** | ✅ Tracked | ✅ Yes | Bursty traffic with burst capacity | Low |
+| **Sliding Window** | 🔧 Local only | ❌ No | Smooth boundary limiting | Low |
+| **Sliding Log** | 🔧 Local only | ❌ No | Highest accuracy, per-request timestamps | High |
 
 All algorithms use **atomic Lua scripts** in Redis — no race conditions across instances.
 
@@ -197,6 +198,44 @@ tiers:
     burst: 20             # Burst capacity of 20
 ```
 
+## 📦 pkg/ratelimiter — Embeddable Library
+
+The `pkg/ratelimiter` package is a **standalone, importable Go library** that wraps the core rate-limiting engine into a clean public API. It accepts only the two production-ready algorithms: **Fixed Window** and **Token Bucket**.
+
+```go
+import "github.com/Nutan-Kum12/RateLimiterX/pkg/ratelimiter"
+
+// Fixed Window — simple, low-overhead
+limiter, err := ratelimiter.New(
+    ratelimiter.WithRedis("localhost:6379", "", 0),
+    ratelimiter.WithAlgorithm("fixed_window"), // or "token_bucket"
+    ratelimiter.WithLimit(100),
+    ratelimiter.WithWindow(time.Minute),
+)
+
+// Token Bucket — allows bursts
+limiter, err := ratelimiter.New(
+    ratelimiter.WithRedis("localhost:6379", "", 0),
+    ratelimiter.WithAlgorithm("token_bucket"),
+    ratelimiter.WithLimit(100),
+    ratelimiter.WithWindow(time.Minute),
+    ratelimiter.WithBurst(20), // extra burst capacity
+)
+
+// Attach as Gin middleware
+router := gin.Default()
+router.Use(limiter.Middleware(ratelimiter.KeyByIP))       // by client IP
+router.Use(limiter.Middleware(ratelimiter.KeyByUserID))   // by authenticated user
+
+// Or call directly (non-Gin / gRPC / etc.)
+result, err := limiter.Allow(ctx, "user-42")
+if !result.Allowed {
+    // reject request
+}
+```
+
+> **Note** — `sliding_window` and `sliding_log` are **not** accepted by `pkg/ratelimiter`; they are available inside `internal/limiter` for local experimentation only.
+
 ## 🧪 Testing
 
 Tests use [miniredis](https://github.com/alicebob/miniredis) — no external Redis required.
@@ -207,6 +246,9 @@ go test -v -race ./tests/unit/...
 
 # Integration tests (middleware pipeline)
 go test -v -race ./tests/integration/...
+
+# pkg/ratelimiter library tests
+go test -v -race ./pkg/ratelimiter/...
 
 # All tests
 go test -v -race ./...
@@ -219,6 +261,7 @@ go test -v -race ./...
 | **Lint** | `golangci-lint` with errcheck, govet, staticcheck, gosec, gocritic, noctx |
 | **Unit Tests** | Fixed window & token bucket with `-race` flag |
 | **Integration Tests** | Auth + rate-limit middleware with miniredis |
+| **Pkg Tests** | `pkg/ratelimiter` library — fixed window & token bucket with `-race` flag |
 | **Build** | Cross-compiles `linux/amd64` binary |
 | **Docker** | Builds & pushes image to GHCR on `main` |
 
@@ -266,6 +309,11 @@ RateLimiterX/
 │   ├── repository/          # Data access layer (UserRepository)
 │   └── service/             # Business logic (AuthService, UserService)
 ├── migrations/              # SQL schema (users table)
+├── pkg/
+│   └── ratelimiter/         # Embeddable public library (Fixed Window + Token Bucket)
+│       ├── ratelimiter.go   # RateLimiter struct, New(), Allow(), Middleware()
+│       ├── options.go       # Functional options (WithRedis, WithAlgorithm, …)
+│       └── ratelimiter_test.go
 ├── tests/
 │   ├── unit/                # Fixed window & token bucket tests
 │   └── integration/         # Middleware pipeline tests

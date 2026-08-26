@@ -36,5 +36,3 @@ go.work.sum
 
 #folder
 .documentaTion
-# pkg/ratelimiter/ratelimiter.go
-pkg/ratelimiter/ratelimiter_test.go
