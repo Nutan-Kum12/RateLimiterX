@@ -48,7 +48,6 @@ func AuthMiddleware(jwtManager *auth.JWTManager) gin.HandlerFunc {
 		c.Set("userID", claims.UserID)
 		// c.Set("email", claims.Email)
 		c.Set("tier", claims.Tier)
-
 		c.Next()
 	}
 }

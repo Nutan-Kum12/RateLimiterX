@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -111,6 +112,11 @@ func main() {
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
+	// pprof server
+	pprofSrv := &http.Server{
+    Addr:    ":6060",
+    Handler: http.DefaultServeMux,
+}
 
 	// Start server in a goroutine
 	go func() {
@@ -121,7 +127,17 @@ func main() {
 			logger.Log.Fatal("HTTP server error", zap.Error(err))
 		}
 	}()
+	// Start pprof server
+	go func() {
+		logger.Log.Info("pprof server starting",
+			zap.String("addr", pprofSrv.Addr),
+		)
 
+		if err := pprofSrv.ListenAndServe(); err != nil &&
+			err != http.ErrServerClosed {
+			logger.Log.Error("pprof server error", zap.Error(err))
+		}
+	}()
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

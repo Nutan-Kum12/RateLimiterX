@@ -200,41 +200,203 @@ tiers:
 
 ## 📦 pkg/ratelimiter — Embeddable Library
 
-The `pkg/ratelimiter` package is a **standalone, importable Go library** that wraps the core rate-limiting engine into a clean public API. It accepts only the two production-ready algorithms: **Fixed Window** and **Token Bucket**.
+The `pkg/ratelimiter` package is a **standalone, importable Go library** that lets you drop production-grade, Redis-backed rate limiting into any Gin application in minutes.
+
+> [!IMPORTANT]
+> **Redis is required.** This library does **not** work without a running Redis instance. All state — counters, token buckets, and window timestamps — is stored atomically in Redis via Lua scripts. There is no in-memory fallback. Calling `ratelimiter.New()` without a reachable Redis will return an error immediately.
+
+---
+
+### Step 1 — Install the package
+
+```bash
+go get github.com/Nutan-Kum12/RateLimiterX/pkg/ratelimiter
+```
+
+---
+
+### Step 2 — Start Redis
+
+You need a running Redis server before your application starts. The simplest way during development:
+
+```bash
+# Using Docker (one-liner)
+docker run -d -p 6379:6379 redis:7-alpine
+
+# Or if Redis is installed locally
+redis-server
+```
+
+Verify it is reachable:
+
+```bash
+redis-cli ping   # should respond: PONG
+```
+
+---
+
+### Step 3 — Create a limiter
+
+Import the package and call `ratelimiter.New()` with functional options:
 
 ```go
-import "github.com/Nutan-Kum12/RateLimiterX/pkg/ratelimiter"
-
-// Fixed Window — simple, low-overhead
-limiter, err := ratelimiter.New(
-    ratelimiter.WithRedis("localhost:6379", "", 0),
-    ratelimiter.WithAlgorithm("fixed_window"), // or "token_bucket"
-    ratelimiter.WithLimit(100),
-    ratelimiter.WithWindow(time.Minute),
+import (
+    "time"
+    "log"
+    "github.com/Nutan-Kum12/RateLimiterX/pkg/ratelimiter"
 )
 
-// Token Bucket — allows bursts
 limiter, err := ratelimiter.New(
-    ratelimiter.WithRedis("localhost:6379", "", 0),
-    ratelimiter.WithAlgorithm("token_bucket"),
-    ratelimiter.WithLimit(100),
-    ratelimiter.WithWindow(time.Minute),
-    ratelimiter.WithBurst(20), // extra burst capacity
+    ratelimiter.WithRedis("localhost:6379", "", 0), // addr, password, db
+    ratelimiter.WithAlgorithm("fixed_window"),       // "fixed_window" | "token_bucket"
+    ratelimiter.WithLimit(100),                      // max requests per window
+    ratelimiter.WithWindow(time.Minute),             // window duration
 )
-
-// Attach as Gin middleware
-router := gin.Default()
-router.Use(limiter.Middleware(ratelimiter.KeyByIP))       // by client IP
-router.Use(limiter.Middleware(ratelimiter.KeyByUserID))   // by authenticated user
-
-// Or call directly (non-Gin / gRPC / etc.)
-result, err := limiter.Allow(ctx, "user-42")
-if !result.Allowed {
-    // reject request
+if err != nil {
+    // Common causes:
+    //   - Redis is not running or unreachable  → "failed to connect to Redis: ..."
+    //   - Unsupported algorithm name            → "unsupported algorithm: ..."
+    log.Fatalf("failed to create limiter: %v", err)
 }
 ```
 
-> **Note** — `sliding_window` and `sliding_log` are **not** accepted by `pkg/ratelimiter`; they are available inside `internal/limiter` for local experimentation only.
+> [!NOTE]
+> `New()` performs a **PING** to Redis during initialisation. If Redis is down, you get an error right away — not silently at request time.
+
+---
+
+### Configuration options reference
+
+| Option | Signature | Description | Default |
+|--------|-----------|-------------|---------|
+| `WithRedis` | `(addr, password string, db int)` | Redis connection — **required** for distributed state | `localhost:6379`, no password, DB 0 |
+| `WithAlgorithm` | `(algo string)` | `"fixed_window"` or `"token_bucket"` | `"fixed_window"` |
+| `WithLimit` | `(limit int)` | Maximum requests allowed per window | `100` |
+| `WithWindow` | `(window time.Duration)` | Duration of the rate-limit window | `1m` |
+| `WithBurst` | `(burst int)` | Extra burst capacity **only for Token Bucket** — ignored for Fixed Window | `0` |
+
+#### Fixed Window vs Token Bucket
+
+```go
+// Fixed Window — strict cap, resets every window
+limiter, _ := ratelimiter.New(
+    ratelimiter.WithRedis("localhost:6379", "", 0),
+    ratelimiter.WithAlgorithm("fixed_window"),
+    ratelimiter.WithLimit(60),           // 60 req/min
+    ratelimiter.WithWindow(time.Minute),
+)
+
+// Token Bucket — allows short bursts above the steady-state rate
+limiter, _ := ratelimiter.New(
+    ratelimiter.WithRedis("redis:6379", "s3cr3t", 1), // production Redis with password + custom DB
+    ratelimiter.WithAlgorithm("token_bucket"),
+    ratelimiter.WithLimit(60),            // 60 req/min steady rate
+    ratelimiter.WithWindow(time.Minute),
+    ratelimiter.WithBurst(20),            // allow up to 20 extra requests in a burst
+)
+```
+
+---
+
+### Step 4 — Attach as Gin middleware
+
+`Middleware(keyFunc)` returns a `gin.HandlerFunc` — register it globally or on a specific route group.
+
+#### Key functions (how clients are identified)
+
+| Key function | Identifies by | Use case |
+|---|---|---|
+| `ratelimiter.KeyByIP` | Client IP address | Public, unauthenticated endpoints |
+| `ratelimiter.KeyByUserID` | `userID` value set in Gin context | Authenticated endpoints (set by your auth middleware) |
+| `ratelimiter.KeyByHeader("X-API-Key")` | Any request header | API-key based limiting |
+
+```go
+router := gin.Default()
+
+// Global — every route limited by IP
+router.Use(limiter.Middleware(ratelimiter.KeyByIP))
+
+// — OR — only a specific group, identified by authenticated user ID
+api := router.Group("/api/v1")
+api.Use(authMiddleware)                               // sets "userID" in context
+api.Use(limiter.Middleware(ratelimiter.KeyByUserID))  // limit per user
+
+// — OR — custom key: limit per API key header
+router.Use(limiter.Middleware(ratelimiter.KeyByHeader("X-API-Key")))
+```
+
+Every response automatically gets these headers:
+
+```
+X-RateLimit-Limit:     100
+X-RateLimit-Remaining: 73
+X-RateLimit-Reset:     1753000000   (Unix timestamp)
+```
+
+When the limit is exceeded, the middleware replies with **HTTP 429** and a `Retry-After` header — your handler is never called.
+
+---
+
+### Step 5 — (Optional) Call `Allow` directly
+
+If you are not using Gin — for example in a gRPC interceptor, CLI tool, or background worker — call `Allow` directly:
+
+```go
+result, err := limiter.Allow(ctx, "some-unique-key")
+if err != nil {
+    // Redis error — decide whether to fail-open or fail-closed
+}
+
+if !result.Allowed {
+    fmt.Printf("rate limited — try again in %v\n", time.Until(result.ResetAt))
+    return
+}
+
+// result.Remaining — requests left in this window
+// result.Limit     — configured limit
+// result.ResetAt   — time.Time when the window resets
+```
+
+---
+
+### Full working example
+
+```go
+package main
+
+import (
+    "log"
+    "net/http"
+    "time"
+
+    "github.com/gin-gonic/gin"
+    "github.com/Nutan-Kum12/RateLimiterX/pkg/ratelimiter"
+)
+
+func main() {
+    // Step 1: create the limiter (Redis must be running)
+    limiter, err := ratelimiter.New(
+        ratelimiter.WithRedis("localhost:6379", "", 0),
+        ratelimiter.WithAlgorithm("token_bucket"),
+        ratelimiter.WithLimit(10),
+        ratelimiter.WithWindow(time.Minute),
+        ratelimiter.WithBurst(5),
+    )
+    if err != nil {
+        log.Fatalf("limiter init failed: %v", err)
+    }
+
+    // Step 2: attach to Gin
+    r := gin.Default()
+    r.Use(limiter.Middleware(ratelimiter.KeyByIP))
+
+    r.GET("/hello", func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{"message": "hello!"})
+    })
+
+    r.Run(":8080")
+}
+```
 
 ## 🧪 Testing
 

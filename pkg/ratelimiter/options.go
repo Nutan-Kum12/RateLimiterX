@@ -40,7 +40,6 @@ func WithRedis(addr, password string, db int) Option {
 
 // WithAlgorithm sets the rate-limiting algorithm.
 // Supported values: "fixed_window", "token_bucket".
-// ("sliding_window" and "sliding_log" are available in internal/limiter for local use only.)
 func WithAlgorithm(algo string) Option {
 	return func(o *options) {
 		o.algorithm = algo
