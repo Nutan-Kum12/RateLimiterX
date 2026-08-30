@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	_ "net/http/pprof"
+	_ "net/http/pprof" //nolint:gosec // pprof is intentionally exposed on the dedicated profiling server
 	"os"
 	"os/signal"
 	"syscall"
@@ -114,9 +114,10 @@ func main() {
 	}
 	// pprof server
 	pprofSrv := &http.Server{
-    Addr:    ":6060",
-    Handler: http.DefaultServeMux,
-}
+		Addr:              ":6060",
+		Handler:           http.DefaultServeMux,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
 
 	// Start server in a goroutine
 	go func() {

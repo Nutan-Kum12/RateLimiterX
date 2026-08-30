@@ -17,6 +17,7 @@ A **production-grade, distributed, extensible rate-limiting framework** and exam
 - **Prometheus Metrics**: Request counters, latency histograms, rate-limit hit/allow ratio
 - **Grafana Dashboard**: Pre-built JSON dashboard included
 - **Structured Logging**: Zap-based request logging with request IDs
+- **pprof Profiling**: Dedicated pprof server on port `6060` for CPU, memory, goroutine, and mutex profiling
 - **Docker Deployment**: Full stack (API + MySQL + Redis + Prometheus + Grafana) via Docker Compose
 - **Repository Pattern**: Clean MySQL data access via `database/sql`
 - **CI Pipeline**: GitHub Actions — lint, unit tests, build, Docker push
@@ -74,6 +75,7 @@ docker compose -f docker/docker-compose.yml up -d
 | Service | URL |
 |---------|-----|
 | API | http://localhost:8080 |
+| pprof | http://localhost:6060/debug/pprof/ |
 | Prometheus | http://localhost:9090 |
 | Grafana | http://localhost:3000 (admin / admin) |
 
@@ -438,13 +440,53 @@ Pre-built dashboard tracks:
 - Request latency (p50 / p95 / p99)
 - Redis operation latency
 
+### Grafana Dashboard
+
+![Grafana Dashboard](docs/images/Grafana-dashboard.png)
+
+## 🔬 Profiling (pprof)
+
+The server exposes Go's built-in [`net/http/pprof`](https://pkg.go.dev/net/http/pprof) profiler on a **dedicated server at port `6060`**, keeping profiling endpoints separate from the main API.
+
+| Endpoint | Description |
+|----------|-------------|
+| `http://localhost:6060/debug/pprof/` | Index page — lists all available profiles |
+| `http://localhost:6060/debug/pprof/profile?seconds=30` | CPU profile (30s sample) |
+| `http://localhost:6060/debug/pprof/heap` | Heap memory profile |
+| `http://localhost:6060/debug/pprof/goroutine` | Goroutine stack dumps |
+| `http://localhost:6060/debug/pprof/allocs` | Memory allocation profile |
+| `http://localhost:6060/debug/pprof/block` | Blocking profile |
+| `http://localhost:6060/debug/pprof/mutex` | Mutex contention profile |
+
+### Usage
+
+```bash
+# Interactive CPU profile (30 seconds)
+go tool pprof "http://localhost:6060/debug/pprof/profile?seconds=30"
+
+# Web UI for CPU profile (requires Graphviz for graph view)
+go tool pprof -http=:9091 "http://localhost:6060/debug/pprof/profile?seconds=30"
+
+# Heap profile
+go tool pprof "http://localhost:6060/debug/pprof/heap"
+
+# Goroutine dump
+curl http://localhost:6060/debug/pprof/goroutine?debug=2
+```
+
+### pprof Dashboard
+
+![pprof Dashboard](docs/images/pprof-dashboard.png)
+
 ## 📂 Project Structure
 
 ```
 RateLimiterX/
-├── cmd/server/              # main.go — application entrypoint
+├── cmd/server/              # main.go — application entrypoint + pprof server
 ├── config/
 │   └── config.yaml          # Default configuration
+├── docs/
+│   └── images/              # Dashboard screenshots (Grafana, pprof)
 ├── docker/
 │   ├── Dockerfile
 │   ├── docker-compose.yml
